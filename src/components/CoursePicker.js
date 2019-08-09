@@ -12,10 +12,16 @@ import _ from 'lodash'
 import CourseContainer from './CourseContainer'
 import courses from './../data/courses.json'
 
-const NewGame = () => {
+const CoursePicker = props => {
   const renderCourses = () => {
     return _.map(courses, course => {
-      return <CourseContainer course={course} key={course.name} />
+      return (
+        <CourseContainer
+          course={course}
+          key={course.name}
+          navigation={props.navigation}
+        />
+      )
     })
   }
 
@@ -41,4 +47,4 @@ const styles = StyleSheet.create({
   }
 })
 
-export default NewGame
+export default CoursePicker

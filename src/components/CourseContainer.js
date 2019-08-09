@@ -38,18 +38,6 @@ const styles = StyleSheet.create({
   courseName: {
     fontSize: 20,
     fontWeight: 'bold'
-  },
-  center: {
-    flex: 1,
-    textAlignVertical: 'center',
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignItems: 'center'
-  },
-  infoText: {
-    color: 'grey',
-    fontSize: 40,
-    fontStyle: 'italic'
   }
 })
 
