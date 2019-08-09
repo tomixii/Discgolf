@@ -9,6 +9,7 @@ import {
   Modal,
   TouchableOpacity
 } from 'react-native'
+import players from './players'
 
 const PlayerPicker = () => {
   const [newName, setNewName] = useState('')
