@@ -8,62 +8,96 @@ import {
   TextInput,
   TouchableOpacity
 } from 'react-native'
-import Modal from "react-native-modal";
+import Modal from 'react-native-modal'
+import Icon from 'react-native-vector-icons/FontAwesome'
 import _ from 'lodash'
-import allPlayers from './../data/players.json'
+import allPlayersDB from './../data/players.json'
 
-const PlayerPicker = () => {
+const PlayerPicker = props => {
   const [newName, setNewName] = useState('')
   const [isAdding, setIsAdding] = useState(false)
-  const [currPlayers, setCurrPLayers] = useState([])
+  const [selectedPlayers, setSelectedPlayers] = useState({})
+  const [allPlayers, setAllPlayers] = useState(allPlayersDB)
+
+  const handlePlayerPress = (player, isSelected) => {
+    console.log(player, isSelected)
+    if (isSelected) {
+      setSelectedPlayers(_.omit(selectedPlayers, player.name))
+    } else {
+      setSelectedPlayers({ ...selectedPlayers, ...{ [player.name]: player } })
+    }
+  }
+
+  const handleAddPlayer = () => {
+    setAllPlayers({ ...allPlayers, ...{ newName: { name: newName } } })
+    setIsAdding(false)
+  }
 
   const renderAllPlayers = () => {
-    return _.map(allPlayers, player => {
-      return <View style={styles.playerSelectable}>
-        <Text style={styles.playerText}>{player}</Text>
-      </View>
+    console.log(selectedPlayers)
+    const playerJSX = []
+    _.forEach(allPlayers, player => {
+      const isSelected = _.has(selectedPlayers, player.name)
+      console.log(player, isSelected)
+      playerJSX.push(
+        <TouchableOpacity
+          style={[
+            styles.playerSelectable,
+            { backgroundColor: isSelected ? '#00c0fa' : 'white' }
+          ]}
+          onPress={() => handlePlayerPress(player, isSelected)}
+          key={player.name}
+        >
+          <Text
+            style={[
+              styles.playerText,
+              { color: isSelected ? 'white' : 'black' }
+            ]}
+          >
+            {player.name}
+          </Text>
+        </TouchableOpacity>
+      )
     })
+    return playerJSX
   }
 
   return (
     <View style={styles.mainContainer}>
-      <Modal isVisible={isAdding} >
+      <Modal isVisible={isAdding}>
         <View style={styles.modalStyle}>
-
-        <TextInput
-          style={styles.nameInput}
-          onChange={name => setNewName(name)}
-          value={newName}
-        />
-        <TouchableOpacity
-          style={styles.addButton}
-          onPress={() => setIsAdding(false)}
-        >
-          <Text style={styles.buttonText}>LISÄÄ PELAAJA</Text>
-        </TouchableOpacity>
+          <TextInput
+            style={styles.nameInput}
+            onChangeText={name => setNewName(name)}
+            value={newName}
+          />
+          <TouchableOpacity
+            style={styles.addButton}
+            onPress={() => handleAddPlayer()}
+          >
+            <Text style={styles.buttonText}>LISÄÄ PELAAJA</Text>
+          </TouchableOpacity>
         </View>
       </Modal>
-      <View style={styles.row}>
-        <View style={styles.playerList}>
+      <View style={styles.playerList}>{renderAllPlayers()}</View>
 
-          {renderAllPlayers()}
-        </View>
-        <View style={{flex: 1, alignItems: 'center', justifyContent: 'space-around'}}>
-          <TouchableOpacity
-              style={styles.playButton}
-              onPress={() => props.navigation.navigate('CurrentGame')}
-          >
-            <Text style={styles.playButtonText}>PELAA</Text>
-          </TouchableOpacity>
-          <TouchableOpacity
-            style={[styles.roundButton]}
-            onPress={() => setIsAdding(true)}
-          >
-            <Text style={[styles.center, styles.buttonText]}>+</Text>
-          </TouchableOpacity>
-
-        </View>
-      </View>
+      <TouchableOpacity
+        style={[styles.roundButton, styles.playButton]}
+        onPress={() =>
+          props.navigation.navigate('CurrentGame', {
+            course: props.navigation.getParam('course'),
+            players: selectedPlayers
+          })
+        }
+      >
+        <Icon name="play" size={30} color="#fff" style={styles.center} />
+      </TouchableOpacity>
+      <TouchableOpacity
+        style={[styles.roundButton, styles.plusButton]}
+        onPress={() => setIsAdding(true)}
+      >
+        <Text style={[styles.center, styles.plusButtonText]}>+</Text>
+      </TouchableOpacity>
     </View>
   )
 }
@@ -73,22 +107,23 @@ const styles = StyleSheet.create({
     flex: 1
   },
   row: {
-    flex:1,
+    flex: 1,
     flexDirection: 'row'
   },
   playButton: {
-    width: 70,
-    backgroundColor: '#00c0fa',
-    margin:10,
-    elevation: 8,
-    textAlign: 'center',
-    justifyContent: 'center',
-    alignItems: 'center'
+    position: 'absolute',
+    right: 10,
+    bottom: 80
   },
-  playButtonText: {
-    fontSize: 70,
+  plusButtonText: {
+    fontSize: 60,
     color: 'white',
     fontWeight: 'bold'
+  },
+  plusButton: {
+    position: 'absolute',
+    right: 80,
+    bottom: 10
   },
   roundButton: {
     backgroundColor: '#00c0fa',
@@ -105,7 +140,7 @@ const styles = StyleSheet.create({
     margin: 10,
     borderColor: '#d9d9d9',
     borderWidth: 2,
-    padding: 10
+    padding: 15
   },
   playerText: {
     fontSize: 20

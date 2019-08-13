@@ -1,1 +1,17 @@
-["Tomi", "Sofia", "Miika", "Samuel", "Tiitus"]
+{
+  "Pelaaja 1": {
+    "name": "Pelaaja 1"
+  },
+  "Pelaaja 2": {
+    "name": "Pelaaja 2"
+  },
+  "Pelaaja 3": {
+    "name": "Pelaaja 3"
+  },
+  "Pelaaja 4": {
+    "name": "Pelaaja 4"
+  },
+  "Pelaaja 5": {
+    "name": "Pelaaja 5"
+  }
+}

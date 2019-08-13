@@ -10,6 +10,12 @@ import {
 } from 'react-native'
 
 const Home = props => {
+  const debugCourse = {
+    name: 'Laajalahti',
+    par: [3, 3, 4, 4, 4, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 3, 5]
+  }
+  debug = false
+
   return (
     <View style={styles.mainContainer}>
       <Text style={[styles.center, styles.infoText]}>
@@ -17,7 +23,19 @@ const Home = props => {
       </Text>
       <TouchableOpacity
         style={[styles.roundButton]}
-        onPress={() => props.navigation.navigate('CoursePicker')}
+        onPress={() => {
+          if (debug) {
+            props.navigation.navigate('CurrentGame', {
+              course: debugCourse,
+              players: {
+                'Pelaaja 1': { name: 'Pelaaja 1' },
+                'Pelaaja 2': { name: 'Pelaaja 2' }
+              }
+            })
+          } else {
+            props.navigation.navigate('CoursePicker')
+          }
+        }}
       >
         <Text style={[styles.center, styles.buttonText]}>+</Text>
       </TouchableOpacity>
