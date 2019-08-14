@@ -29,7 +29,9 @@ const PlayerPicker = props => {
   }
 
   const handleAddPlayer = () => {
-    setAllPlayers({ ...allPlayers, ...{ newName: { name: newName } } })
+    const newPlayer = { name: newName }
+    setAllPlayers({ ...allPlayers, ...{ [newName]: newPlayer } })
+    handlePlayerPress(newPlayer, false)
     setIsAdding(false)
   }
 
@@ -82,13 +84,20 @@ const PlayerPicker = props => {
       <View style={styles.playerList}>{renderAllPlayers()}</View>
 
       <TouchableOpacity
-        style={[styles.roundButton, styles.playButton]}
+        style={[
+          styles.roundButton,
+          styles.playButton,
+          {
+            backgroundColor: _.isEmpty(selectedPlayers) ? '#c9c9c9' : '#00c0fa'
+          }
+        ]}
         onPress={() =>
           props.navigation.navigate('CurrentGame', {
             course: props.navigation.getParam('course'),
             players: selectedPlayers
           })
         }
+        disabled={_.isEmpty(selectedPlayers)}
       >
         <Icon name="play" size={30} color="#fff" style={styles.center} />
       </TouchableOpacity>
@@ -101,6 +110,18 @@ const PlayerPicker = props => {
     </View>
   )
 }
+
+PlayerPicker.navigationOptions = ({ navigation }) => ({
+  title: 'Valitse pelaajat',
+  headerTitleStyle: {
+    fontSize: 24
+  },
+  headerTintColor: '#fff',
+
+  headerStyle: {
+    backgroundColor: '#00c0fa'
+  }
+})
 
 const styles = StyleSheet.create({
   mainContainer: {

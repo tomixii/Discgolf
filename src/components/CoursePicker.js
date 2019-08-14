@@ -28,6 +28,18 @@ const CoursePicker = props => {
   return <View style={styles.allCourses}>{renderCourses()}</View>
 }
 
+CoursePicker.navigationOptions = ({ navigation }) => ({
+  title: 'Valitse rata',
+  headerTitleStyle: {
+    fontSize: 24
+  },
+  headerTintColor: '#fff',
+
+  headerStyle: {
+    backgroundColor: '#00c0fa'
+  }
+})
+
 const styles = StyleSheet.create({
   allCourses: {
     flexWrap: 'wrap',

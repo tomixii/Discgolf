@@ -43,6 +43,18 @@ const Home = props => {
   )
 }
 
+Home.navigationOptions = ({ navigation }) => ({
+  title: 'Fribailua',
+  headerTitleStyle: {
+    fontSize: 24
+  },
+  headerTintColor: '#fff',
+
+  headerStyle: {
+    backgroundColor: '#00c0fa'
+  }
+})
+
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1

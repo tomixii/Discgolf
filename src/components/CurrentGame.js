@@ -11,11 +11,12 @@ import {
 import _ from 'lodash'
 
 import Icon from 'react-native-vector-icons/FontAwesome'
+import Scorecard from './Scorecard'
 
 const CurrentGame = props => {
   const course = props.navigation.getParam('course')
   const players = props.navigation.getParam('players')
-  const [currentHole, setCurrentHole] = useState(0)
+  const [currentHole, setCurrentHole] = useState(course.par.length)
   const [scores, setScores] = useState(
     _.mapValues(players, p => {
       return {
@@ -47,6 +48,8 @@ const CurrentGame = props => {
       [player.name]: { ...player, score: newScore }
     })
   }
+
+  const handleSaveScorecard = () => {}
 
   const renderPlayers = () => {
     return _.map(scores, player => {
@@ -80,16 +83,24 @@ const CurrentGame = props => {
 
   return (
     <View style={styles.mainContainer}>
-      <View
-        style={[
-          styles.row,
-          { borderBottomColor: '#d9d9d9', borderBottomWidth: 2 }
-        ]}
-      >
-        <Text style={styles.mainText}>Väylä: {currentHole + 1}</Text>
-        <Text style={styles.mainText}>PAR: {course.par[currentHole]}</Text>
-      </View>
-      {renderPlayers()}
+      {currentHole < course.par.length ? (
+        <View style={{ flex: 1 }}>
+          <View
+            style={[
+              styles.row,
+              { borderBottomColor: '#d9d9d9', borderBottomWidth: 2 }
+            ]}
+          >
+            <Text style={styles.mainText}>Väylä: {currentHole + 1}</Text>
+            <Text style={styles.mainText}>PAR: {course.par[currentHole]}</Text>
+          </View>
+          {renderPlayers()}
+        </View>
+      ) : (
+        <View style={{ flex: 1 }}>
+          <Scorecard scores={scores} course={course} />
+        </View>
+      )}
       <View
         style={[
           styles.row,
@@ -99,22 +110,48 @@ const CurrentGame = props => {
           }
         ]}
       >
-        <TouchableOpacity
-          onPress={() => setCurrentHole(Math.max(currentHole - 1, 0))}
-        >
-          <Icon name="arrow-left" size={40} />
-        </TouchableOpacity>
-        <TouchableOpacity
-          onPress={() =>
-            setCurrentHole(Math.min(currentHole + 1, course.par.length - 1))
-          }
-        >
-          <Icon name="arrow-right" size={40} />
-        </TouchableOpacity>
+        {currentHole > 0 ? (
+          <TouchableOpacity
+            onPress={() => setCurrentHole(Math.max(currentHole - 1, 0))}
+          >
+            <Icon name="arrow-left" size={40} />
+          </TouchableOpacity>
+        ) : (
+          <View />
+        )}
+        {currentHole < course.par.length ? (
+          <TouchableOpacity
+            onPress={() =>
+              setCurrentHole(Math.min(currentHole + 1, course.par.length))
+            }
+          >
+            <Icon name="arrow-right" size={40} />
+          </TouchableOpacity>
+        ) : (
+          <TouchableOpacity
+            style={styles.saveButton}
+            onPress={() => handleSaveScorecard()}
+          >
+            <Text style={styles.buttonText}>TALLENNA TULOSKORTTI</Text>
+          </TouchableOpacity>
+        )}
       </View>
     </View>
   )
 }
+
+CurrentGame.navigationOptions = ({ navigation }) => ({
+  title: navigation.getParam('course').name,
+  headerTitleStyle: {
+    fontSize: 24
+  },
+  headerTintColor: '#fff',
+
+  headerStyle: {
+    backgroundColor: '#00c0fa'
+  },
+  headerLeft: null
+})
 
 const styles = StyleSheet.create({
   mainContainer: {
@@ -158,6 +195,19 @@ const styles = StyleSheet.create({
   scoreControlText: {
     color: 'white',
     fontSize: 24,
+    fontWeight: 'bold'
+  },
+  saveButton: {
+    backgroundColor: '#00c0fa',
+    height: 50,
+    padding: 10,
+    paddingLeft: 20,
+    paddingRight: 20,
+    textAlign: 'center'
+  },
+  buttonText: {
+    fontSize: 20,
+    color: 'white',
     fontWeight: 'bold'
   }
 })
