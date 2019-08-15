@@ -16,7 +16,7 @@ import Scorecard from './Scorecard'
 const CurrentGame = props => {
   const course = props.navigation.getParam('course')
   const players = props.navigation.getParam('players')
-  const [currentHole, setCurrentHole] = useState(course.par.length)
+  const [currentHole, setCurrentHole] = useState(0)
   const [scores, setScores] = useState(
     _.mapValues(players, p => {
       return {
