@@ -15,6 +15,7 @@ import CurrentGame from './src/components/CurrentGame'
 import Game from './src/components/Game'
 import PlayerPicker from './src/components/PlayerPicker'
 import CoursePicker from './src/components/CoursePicker'
+import ScorecardScreen from './src/components/ScorecardScreen'
 
 //const NewGameStack = createStackNavigator({})
 
@@ -24,7 +25,8 @@ const MainStack = createAppContainer(
     CoursePicker: { screen: CoursePicker },
     PlayerPicker: { screen: PlayerPicker },
     CurrentGame: { screen: CurrentGame },
-    Game: { screen: Game }
+    Game: { screen: Game },
+    ScorecardScreen: { screen: ScorecardScreen }
   })
 )
 

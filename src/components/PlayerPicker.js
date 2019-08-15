@@ -11,16 +11,26 @@ import {
 import Modal from 'react-native-modal'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import _ from 'lodash'
-import allPlayersDB from './../data/players.json'
+import AsyncStorage from '@react-native-community/async-storage'
+import { NavigationEvents } from 'react-navigation'
 
 const PlayerPicker = props => {
   const [newName, setNewName] = useState('')
   const [isAdding, setIsAdding] = useState(false)
   const [selectedPlayers, setSelectedPlayers] = useState({})
-  const [allPlayers, setAllPlayers] = useState(allPlayersDB)
+  const [allPlayers, setAllPlayers] = useState([])
+
+  const fetchPlayers = async () => {
+    try {
+      await AsyncStorage.getItem('@Players').then(allPlayersDB => {
+        setAllPlayers(JSON.parse(allPlayersDB))
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const handlePlayerPress = (player, isSelected) => {
-    console.log(player, isSelected)
     if (isSelected) {
       setSelectedPlayers(_.omit(selectedPlayers, player.name))
     } else {
@@ -28,19 +38,24 @@ const PlayerPicker = props => {
     }
   }
 
-  const handleAddPlayer = () => {
+  const handleAddPlayer = async () => {
     const newPlayer = { name: newName }
-    setAllPlayers({ ...allPlayers, ...{ [newName]: newPlayer } })
+    const newPlayerList = { ...allPlayers, ...{ [newName]: newPlayer } }
+    try {
+      await AsyncStorage.setItem('@Players', JSON.stringify(newPlayerList))
+    } catch (error) {
+      console.log(error)
+    }
+    setAllPlayers(newPlayerList)
     handlePlayerPress(newPlayer, false)
     setIsAdding(false)
+    setNewName('')
   }
 
   const renderAllPlayers = () => {
-    console.log(selectedPlayers)
     const playerJSX = []
     _.forEach(allPlayers, player => {
       const isSelected = _.has(selectedPlayers, player.name)
-      console.log(player, isSelected)
       playerJSX.push(
         <TouchableOpacity
           style={[
@@ -66,6 +81,7 @@ const PlayerPicker = props => {
 
   return (
     <View style={styles.mainContainer}>
+      <NavigationEvents onWillFocus={() => fetchPlayers()} />
       <Modal isVisible={isAdding}>
         <View style={styles.modalStyle}>
           <TextInput

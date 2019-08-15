@@ -9,7 +9,7 @@ import {
   TouchableOpacity
 } from 'react-native'
 import _ from 'lodash'
-
+import AsyncStorage from '@react-native-community/async-storage'
 import Icon from 'react-native-vector-icons/FontAwesome'
 import Scorecard from './Scorecard'
 
@@ -40,7 +40,6 @@ const CurrentGame = props => {
   }
 
   const increaseScore = player => {
-    console.log(scores)
     const newScore = _.clone(player.score)
     newScore[currentHole]++
     setScores({
@@ -49,12 +48,27 @@ const CurrentGame = props => {
     })
   }
 
-  const handleSaveScorecard = () => {}
+  const handleSaveScorecard = async () => {
+    try {
+      await AsyncStorage.getItem('@Scorecards').then(oldScorecards => {
+        let newScorecards = [{ scores: scores, course: course }]
+        if (oldScorecards) {
+          newScorecards.push(...JSON.parse(oldScorecards))
+        }
+        try {
+          AsyncStorage.setItem('@Scorecards', JSON.stringify(newScorecards))
+        } catch (error) {
+          console.log(error)
+        }
+        props.navigation.navigate('Home')
+      })
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   const renderPlayers = () => {
     return _.map(scores, player => {
-      console.log(scores)
-      console.log(player)
       return (
         <View style={[styles.row, styles.playerContainer]} key={player.name}>
           <View>
